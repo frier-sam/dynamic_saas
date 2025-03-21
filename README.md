@@ -24,8 +24,8 @@ All of this happens through a conversational interface, making it accessible to 
 ## Technology Stack
 
 - **Backend**: Django with REST Framework
-- **Database**: SQLite (can be replaced with PostgreSQL for production)
-- **AI**: Azure OpenAI (GPT models)
+- **Database**: SQLite 
+- **AI**: Azure OpenAI (GPT-4o models)
 - **Frontend**: HTML, Tailwind CSS, JavaScript
 
 ## Prerequisites
@@ -74,10 +74,7 @@ All of this happens through a conversational interface, making it accessible to 
    python manage.py runserver
    ```
 
-For a more automated setup, you can use the included deployment script:
-```
-bash deploy.sh
-```
+
 
 ## Usage
 
@@ -88,7 +85,7 @@ bash deploy.sh
 5. **Use your generated modules** to manage your data
 
 ### Example Prompts
-
+- "todo app with categories"
 - "I want to create an invoice management system where I can track customers, products, and generate invoices with line items."
 - "Can you help me build a simple CRM to track contacts, companies, deals, and activities?"
 - "I need a task management tool with projects, tasks, due dates, and priority levels."
@@ -105,32 +102,9 @@ The system consists of several key components:
 5. **Database Manager**: Handles dynamic database operations
 6. **UI Generator**: Creates user interfaces for modules
 
-## Production Deployment
-
-For production deployment, consider:
-
-1. Using PostgreSQL instead of SQLite
-2. Setting up behind a proper web server (Nginx/Apache)
-3. Using HTTPS
-4. Configuring proper security settings in `settings.py`
-5. Using environment variables for all sensitive information
-
-You can deploy to various cloud providers such as:
-- Heroku
-- AWS
-- Google Cloud
-- Microsoft Azure
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- Django framework
-- OpenAI for the underlying AI capabilities
-- Tailwind CSS for styling
