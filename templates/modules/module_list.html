@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Modules{% endblock %}
+
+{% block page_title %}Modules{% endblock %}
+
+{% block header_actions %}
+    <button id="create-module-btn" class="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-3 py-1.5 text-sm flex items-center">
+        <i class="fas fa-plus mr-1"></i> New Module
+    </button>
+{% endblock %}
+
+{% block content %}
+<div class="h-full">
+    <!-- Module List -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for module in modules %}
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                <div class="p-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-blue-600">{{ module.name }}</h3>
+                    <p class="text-sm text-gray-500">
+                        <span class="mr-3">
+                            <i class="fas fa-calendar-alt mr-1"></i> {{ module.created_at|date:"M d, Y" }}
+                        </span>
+                        <span>
+                            <i class="fas fa-cubes mr-1"></i> {{ module.tables.count }} tables
+                        </span>
+                    </p>
+                </div>
+                <div class="p-4">
+                    <p class="text-gray-700 mb-4">
+                        {% if module.description %}
+                            {{ module.description }}
+                        {% else %}
+                            <span class="text-gray-400 italic">No description</span>
+                        {% endif %}
+                    </p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                {{ module.get_module_type_display }}
+                            </span>
+                            {% if module.has_gui %}
+                                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                    <i class="fas fa-desktop mr-1"></i> Has UI
+                                </span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'module_detail' module.id %}" class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-arrow-right"></i> View
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-span-full bg-white rounded-lg border border-gray-200 p-8 text-center">
+                <div class="text-gray-400 mb-4">
+                    <i class="fas fa-cube text-5xl"></i>
+                </div>
+                <h3 class="text-lg font-medium mb-2">No modules yet</h3>
+                <p class="text-gray-500 mb-4">Create your first module to get started.</p>
+                <button id="empty-create-module-btn" class="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2">
+                    <i class="fas fa-plus mr-1"></i> Create Module
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Create Module Modal -->
+    <div id="create-module-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg max-w-lg w-full">
+            <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 class="text-lg font-medium">Create New Module</h2>
+                <button id="close-create-module" class="text-gray-500 hover:text-red-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="create-module-form">
+                    <div class="mb-4">
+                        <label for="module-name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" id="module-name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               placeholder="E.g., Invoice Manager">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="module-type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                        <select id="module-type" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="data">Data Management</option>
+                            <option value="form">Form Interface</option>
+                            <option value="report">Reporting</option>
+                            <option value="dashboard">Dashboard</option>
+                            <option value="custom">Custom Type</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="module-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="module-description" rows="4" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                 placeholder="Describe what this module will do..."></textarea>
+                    </div>
+                    
+                    <p class="text-sm text-gray-500 mb-4">
+                        After creating your module, you can chat with the AI to build database tables, add data, and create a user interface.
+                    </p>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancel-create-module" class="bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md px-4 py-2">
+                            Cancel
+                        </button>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2">
+                            Create Module
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show create module modal
+    document.getElementById('create-module-btn').addEventListener('click', () => {
+        document.getElementById('create-module-modal').classList.remove('hidden');
+    });
+    
+    // Empty state create button
+    if (document.getElementById('empty-create-module-btn')) {
+        document.getElementById('empty-create-module-btn').addEventListener('click', () => {
+            document.getElementById('create-module-modal').classList.remove('hidden');
+        });
+    }
+    
+    // Close create module modal
+    document.getElementById('close-create-module').addEventListener('click', () => {
+        document.getElementById('create-module-modal').classList.add('hidden');
+    });
+    
+    // Cancel create module
+    document.getElementById('cancel-create-module').addEventListener('click', () => {
+        document.getElementById('create-module-modal').classList.add('hidden');
+    });
+    
+    // Create module form submission
+    document.getElementById('create-module-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('module-name').value.trim();
+        const moduleType = document.getElementById('module-type').value;
+        const description = document.getElementById('module-description').value.trim();
+        
+        if (!name) {
+            alert('Module name is required');
+            return;
+        }
+        
+        // Disable submit button to prevent double submission
+        e.target.querySelector('button[type="submit"]').disabled = true;
+        e.target.querySelector('button[type="submit"]').textContent = 'Creating...';
+        
+        try {
+            const response = await fetch('/modules/api/modules/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    name,
+                    module_type: moduleType,
+                    description
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to create module');
+            }
+            
+            const data = await response.json();
+            
+            // Redirect to the new module
+            window.location.href = `/modules/${data.id}/`;
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to create module. Please try again.');
+            
+            // Re-enable the submit button
+            e.target.querySelector('button[type="submit"]').disabled = false;
+            e.target.querySelector('button[type="submit"]').textContent = 'Create Module';
+        }
+    });
+    
+    // Get CSRF token for POST requests
+    function getCSRFToken() {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') {
+                return value;
+            }
+        }
+        return null;
+    }
+</script>
+{% endblock %}

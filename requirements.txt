@@ -1,0 +1,6 @@
+django==4.2.6
+djangorestframework==3.14.0
+openai==0.28.1
+python-dotenv==1.0.0
+gunicorn==21.2.0
+whitenoise==6.5.0

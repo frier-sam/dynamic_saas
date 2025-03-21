@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block header_actions %}
+    <div class="flex items-center space-x-3">
+        <a href="{% url 'module_list' %}" class="text-blue-500 hover:text-blue-700">
+            <i class="fas fa-cube mr-1"></i> All Modules
+        </a>
+        <a href="{% url 'chat' %}" class="text-blue-500 hover:text-blue-700">
+            <i class="fas fa-comment-alt mr-1"></i> Start Chat
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="h-full">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="text-2xl font-bold mb-2">Welcome, {{ user.username }}!</h2>
+                <p class="text-gray-500">
+                    Build and manage your custom applications through conversation.
+                </p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <a href="{% url 'chat' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                    <i class="fas fa-magic mr-1"></i> Create Something New
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Start Guide -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-medium mb-4">Quick Start Guide</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="border border-gray-200 rounded-md p-4 bg-gray-50">
+                <div class="flex items-center mb-3">
+                    <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                        <span>1</span>
+                    </div>
+                    <h4 class="font-medium">Start a Conversation</h4>
+                </div>
+                <p class="text-sm text-gray-600">
+                    Begin by describing what you want to build. Our AI will guide you through the process.
+                </p>
+                <a href="{% url 'chat' %}" class="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800">
+                    Go to Chat <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            
+            <div class="border border-gray-200 rounded-md p-4 bg-gray-50">
+                <div class="flex items-center mb-3">
+                    <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                        <span>2</span>
+                    </div>
+                    <h4 class="font-medium">Create a Module</h4>
+                </div>
+                <p class="text-sm text-gray-600">
+                    Ask the AI to create a module for your specific need, like invoice management or CRM.
+                </p>
+                <a href="{% url 'module_list' %}" class="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800">
+                    View Modules <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            
+            <div class="border border-gray-200 rounded-md p-4 bg-gray-50">
+                <div class="flex items-center mb-3">
+                    <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                        <span>3</span>
+                    </div>
+                    <h4 class="font-medium">Generate UI & Add Data</h4>
+                </div>
+                <p class="text-sm text-gray-600">
+                    Ask the AI to create a UI for your module and add/query data through conversation or UI.
+                </p>
+                <a href="#example-prompts" class="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800">
+                    See Example Prompts <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-800 mr-4">
+                    <i class="fas fa-cube text-lg"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Total Modules</p>
+                    <h3 class="text-2xl font-bold">{{ user.modules.all.count }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100 text-purple-800 mr-4">
+                    <i class="fas fa-comment-alt text-lg"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Conversations</p>
+                    <h3 class="text-2xl font-bold">{{ user.conversations.all.count }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-800 mr-4">
+                    <i class="fas fa-desktop text-lg"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Modules with UI</p>
+                    <h3 class="text-2xl font-bold">{{ user.modules.filter.has_gui.count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Modules -->
+    <div class="bg-white rounded-lg border border-gray-200 mb-6">
+        <div class="border-b border-gray-200 p-4 flex items-center justify-between">
+            <h3 class="text-lg font-medium">Recent Modules</h3>
+            <a href="{% url 'module_list' %}" class="text-sm text-blue-600 hover:text-blue-800">
+                View All
+            </a>
+        </div>
+        
+        <div class="p-4">
+            {% if recent_modules %}
+                <div class="divide-y divide-gray-200">
+                    {% for module in recent_modules %}
+                        <div class="py-3 flex items-center">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fas {% if module.module_type == 'data' %}fa-database{% elif module.module_type == 'form' %}fa-wpforms{% elif module.module_type == 'report' %}fa-chart-bar{% elif module.module_type == 'dashboard' %}fa-tachometer-alt{% else %}fa-cube{% endif %} text-blue-600"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <a href="{% url 'module_detail' module.id %}" class="text-sm font-medium text-blue-600 hover:text-blue-800">
+                                    {{ module.name }}
+                                </a>
+                                <p class="text-xs text-gray-500">
+                                    {{ module.get_module_type_display }} • Updated {{ module.updated_at|date:"M d, Y" }}
+                                </p>
+                            </div>
+                            <div class="ml-4 flex-shrink-0">
+                                <a href="{% url 'module_detail' module.id %}" class="text-sm text-gray-500 hover:text-blue-600">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <div class="text-gray-400 mb-3">
+                        <i class="fas fa-cube text-3xl"></i>
+                    </div>
+                    <h4 class="text-lg font-medium mb-2">No modules yet</h4>
+                    <p class="text-gray-500 mb-4">Create your first module to get started.</p>
+                    <a href="{% url 'chat' %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 text-sm">
+                        <i class="fas fa-plus mr-1"></i> Create Module
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recent Conversations -->
+    <div class="bg-white rounded-lg border border-gray-200 mb-6">
+        <div class="border-b border-gray-200 p-4 flex items-center justify-between">
+            <h3 class="text-lg font-medium">Recent Conversations</h3>
+            <a href="{% url 'chat' %}" class="text-sm text-blue-600 hover:text-blue-800">
+                View All
+            </a>
+        </div>
+        
+        <div class="p-4">
+            {% if recent_conversations %}
+                <div class="divide-y divide-gray-200">
+                    {% for conversation in recent_conversations %}
+                        <div class="py-3 flex items-center">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <i class="fas {% if conversation.module %}fa-cube{% else %}fa-comment-alt{% endif %} text-purple-600"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <a href="{% url 'conversation_detail' conversation.id %}" class="text-sm font-medium text-purple-600 hover:text-purple-800">
+                                    {{ conversation.title }}
+                                </a>
+                                <p class="text-xs text-gray-500">
+                                    {% if conversation.module %}
+                                        Module: {{ conversation.module.name }} •
+                                    {% endif %}
+                                    Updated {{ conversation.updated_at|date:"M d, Y" }}
+                                </p>
+                            </div>
+                            <div class="ml-4 flex-shrink-0">
+                                <a href="{% url 'conversation_detail' conversation.id %}" class="text-sm text-gray-500 hover:text-purple-600">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <div class="text-gray-400 mb-3">
+                        <i class="fas fa-comment-alt text-3xl"></i>
+                    </div>
+                    <h4 class="text-lg font-medium mb-2">No conversations yet</h4>
+                    <p class="text-gray-500 mb-4">Start a conversation with our AI to build your modules.</p>
+                    <a href="{% url 'chat' %}" class="inline-block bg-purple-500 hover:bg-purple-600 text-white rounded-md px-4 py-2 text-sm">
+                        <i class="fas fa-comment-alt mr-1"></i> Start Chat
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Example Prompts -->
+    <div id="example-prompts" class="bg-white rounded-lg border border-gray-200">
+        <div class="border-b border-gray-200 p-4">
+            <h3 class="text-lg font-medium">Example Prompts to Try</h3>
+        </div>
+        
+        <div class="p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="border border-gray-200 rounded-md p-4 bg-gray-50 hover:bg-blue-50 transition-colors">
+                    <h4 class="font-medium mb-2">Create an Invoice Module</h4>
+                    <p class="text-sm text-gray-600 mb-2">
+                        "I want to create an invoice management system where I can track customers, products, and generate invoices with line items."
+                    </p>
+                    <a href="{% url 'chat' %}" class="text-sm text-blue-600 hover:text-blue-800">
+                        Try this prompt <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="border border-gray-200 rounded-md p-4 bg-gray-50 hover:bg-blue-50 transition-colors">
+                    <h4 class="font-medium mb-2">Build a CRM</h4>
+                    <p class="text-sm text-gray-600 mb-2">
+                        "Can you help me build a simple CRM to track contacts, companies, deals, and activities?"
+                    </p>
+                    <a href="{% url 'chat' %}" class="text-sm text-blue-600 hover:text-blue-800">
+                        Try this prompt <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="border border-gray-200 rounded-md p-4 bg-gray-50 hover:bg-blue-50 transition-colors">
+                    <h4 class="font-medium mb-2">Create a Task Manager</h4>
+                    <p class="text-sm text-gray-600 mb-2">
+                        "I need a task management tool with projects, tasks, due dates, and priority levels."
+                    </p>
+                    <a href="{% url 'chat' %}" class="text-sm text-blue-600 hover:text-blue-800">
+                        Try this prompt <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="border border-gray-200 rounded-md p-4 bg-gray-50 hover:bg-blue-50 transition-colors">
+                    <h4 class="font-medium mb-2">Generate a UI</h4>
+                    <p class="text-sm text-gray-600 mb-2">
+                        "Can you create a user interface for my module? I need forms to add data and a dashboard to view records."
+                    </p>
+                    <a href="{% url 'chat' %}" class="text-sm text-blue-600 hover:text-blue-800">
+                        Try this prompt <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

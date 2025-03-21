@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block unauthenticated_content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <h1 class="text-center text-3xl font-bold text-blue-600">Dynamic SaaS</h1>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Create a new account
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Or
+                <a href="{% url 'login' %}" class="font-medium text-blue-600 hover:text-blue-500">
+                    sign in to your existing account
+                </a>
+            </p>
+        </div>
+        
+        {% if form.errors %}
+            <div class="bg-red-50 border border-red-200 text-red-800 rounded-md p-4">
+                <p class="font-medium">Please fix the following errors:</p>
+                <ul class="mt-1 list-disc list-inside text-sm">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        
+        <form class="mt-8 space-y-6" method="POST">
+            {% csrf_token %}
+            
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div>
+                    <label for="id_username" class="sr-only">Username</label>
+                    <input id="id_username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Username">
+                </div>
+                <div>
+                    <label for="id_email" class="sr-only">Email address</label>
+                    <input id="id_email" name="email" type="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Email address">
+                </div>
+                <div>
+                    <label for="id_password1" class="sr-only">Password</label>
+                    <input id="id_password1" name="password1" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Password">
+                </div>
+                <div>
+                    <label for="id_password2" class="sr-only">Confirm Password</label>
+                    <input id="id_password2" name="password2" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Confirm Password">
+                </div>
+            </div>
+
+            <div class="text-sm text-gray-600">
+                <p>Password requirements:</p>
+                <ul class="list-disc list-inside ml-2 mt-1">
+                    <li>8 characters minimum</li>
+                    <li>Cannot be entirely numeric</li>
+                    <li>Cannot be too similar to your username</li>
+                    <li>Cannot be a commonly used password</li>
+                </ul>
+            </div>
+
+            <div>
+                <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fas fa-user-plus text-blue-500 group-hover:text-blue-400"></i>
+                    </span>
+                    Sign up
+                </button>
+            </div>
+        </form>
+        
+        <div class="text-center">
+            <a href="{% url 'landing' %}" class="text-sm text-gray-600 hover:text-blue-500">
+                <i class="fas fa-arrow-left mr-1"></i> Back to homepage
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

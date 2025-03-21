@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block page_title %}Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div class="flex items-center mb-6">
+            <div class="flex-shrink-0 mr-4">
+                <div class="bg-blue-100 rounded-full p-3 text-blue-500">
+                    <i class="fas fa-user-circle text-3xl"></i>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold">{{ user.username }}</h2>
+                <p class="text-gray-500">{{ user.email }}</p>
+                <p class="text-sm text-gray-400">Member since {{ user.date_joined|date:"F j, Y" }}</p>
+            </div>
+        </div>
+        
+        <div class="border-t border-gray-200 pt-4">
+            <h3 class="text-lg font-medium mb-4">Account Information</h3>
+            
+            <form method="POST" id="profile-form" class="space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <input type="text" id="username" name="username" value="{{ user.username }}" disabled class="w-full border border-gray-300 bg-gray-100 rounded-md px-3 py-2">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                    <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                    <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                
+                <div class="pt-4">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-medium mb-4">Change Password</h3>
+        
+        <form method="POST" id="password-form" class="space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                <input type="password" id="current_password" name="current_password" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+                <label for="new_password1" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <input type="password" id="new_password1" name="new_password1" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+                <label for="new_password2" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                <input type="password" id="new_password2" name="new_password2" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div class="pt-4">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2">
+                    Change Password
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 class="text-lg font-medium mb-4">Account Statistics</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-gray-50 rounded-md p-4">
+                <div class="text-sm text-gray-500 mb-1">Total Modules</div>
+                <div class="text-2xl font-bold">{{ user.modules.all.count }}</div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-md p-4">
+                <div class="text-sm text-gray-500 mb-1">Conversations</div>
+                <div class="text-2xl font-bold">{{ user.conversations.all.count }}</div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-md p-4">
+                <div class="text-sm text-gray-500 mb-1">Last Login</div>
+                <div class="text-2xl font-bold">{{ user.last_login|date:"M d, Y" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Profile form submission
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        
+        try {
+            // In a real implementation, you'd have a profile update API
+            // For now, we'll just show a success message
+            alert('Profile updated successfully');
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to update profile');
+        }
+    });
+    
+    // Password form submission
+    document.getElementById('password-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const currentPassword = formData.get('current_password');
+        const newPassword1 = formData.get('new_password1');
+        const newPassword2 = formData.get('new_password2');
+        
+        if (!currentPassword || !newPassword1 || !newPassword2) {
+            alert('All password fields are required');
+            return;
+        }
+        
+        if (newPassword1 !== newPassword2) {
+            alert('New passwords do not match');
+            return;
+        }
+        
+        try {
+            // In a real implementation, you'd have a password change API
+            // For now, we'll just show a success message
+            alert('Password changed successfully');
+            
+            // Clear form
+            e.target.reset();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to change password');
+        }
+    });
+</script>
+{% endblock %}

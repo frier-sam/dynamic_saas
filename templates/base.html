@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dynamic SaaS Generator{% endblock %}</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        .sidebar-menu a.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: rgb(59, 130, 246);
+            font-weight: 500;
+        }
+        
+        .sidebar-menu a:hover:not(.active) {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        
+        .chat-message.user {
+            background-color: #f0f9ff;
+            border-radius: 10px 10px 0 10px;
+            align-self: flex-end;
+        }
+        
+        .chat-message.assistant {
+            background-color: #f9fafb;
+            border-radius: 10px 10px 10px 0;
+            align-self: flex-start;
+        }
+        
+        .loading-dots:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+        
+        /* Markdown styles */
+        .markdown-content h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-content h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-content h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-content p {
+            margin-bottom: 0.75rem;
+        }
+        
+        .markdown-content ul, .markdown-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+        
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
+        
+        .markdown-content pre {
+            background-color: #f3f4f6;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.75rem;
+            overflow-x: auto;
+        }
+        
+        .markdown-content code {
+            font-family: monospace;
+            background-color: #f3f4f6;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+        }
+        
+        .markdown-content pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        .markdown-content blockquote {
+            border-left: 4px solid #e5e7eb;
+            padding-left: 1rem;
+            margin-left: 0;
+            margin-bottom: 0.75rem;
+            color: #4b5563;
+        }
+        
+        .markdown-content a {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+        
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0.75rem;
+        }
+        
+        .markdown-content table th, .markdown-content table td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem;
+        }
+        
+        .markdown-content table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+    {% if user.is_authenticated %}
+        <div class="flex h-screen overflow-hidden">
+            <!-- Sidebar -->
+            <div id="sidebar" class="bg-white w-64 border-r border-gray-200 flex flex-col">
+                <!-- Logo -->
+                <div class="p-4 border-b border-gray-200">
+                    <h1 class="text-xl font-bold text-blue-600">Dynamic SaaS</h1>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="flex-grow overflow-y-auto p-4 sidebar-menu">
+                    <div class="mb-6">
+                        <h2 class="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">Navigation</h2>
+                        <ul>
+                            <li>
+                                <a href="{% url 'home' %}" class="flex items-center py-2 px-3 rounded-md {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                                    <i class="fas fa-home w-5"></i>
+                                    <span>Home</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'chat' %}" class="flex items-center py-2 px-3 rounded-md {% if request.resolver_match.url_name == 'chat' or request.resolver_match.url_name == 'conversation_detail' %}active{% endif %}">
+                                    <i class="fas fa-comment-alt w-5"></i>
+                                    <span>Chat</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'module_list' %}" class="flex items-center py-2 px-3 rounded-md {% if request.resolver_match.url_name == 'module_list' or request.resolver_match.url_name == 'module_detail' %}active{% endif %}">
+                                    <i class="fas fa-cube w-5"></i>
+                                    <span>Modules</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    {% block sidebar_content %}{% endblock %}
+                </nav>
+                
+                <!-- User Menu -->
+                <div class="p-4 border-t border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-user-circle text-gray-400 text-2xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-700">{{ user.username }}</p>
+                            <div class="flex space-x-2 text-xs text-gray-500">
+                                <a href="{% url 'profile' %}" class="hover:text-blue-500">Profile</a>
+                                <span>|</span>
+                                <a href="{% url 'logout' %}" class="hover:text-blue-500">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Top Bar -->
+                <header class="bg-white border-b border-gray-200 py-3 px-6 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <button id="toggle-sidebar" class="mr-4 md:hidden">
+                            <i class="fas fa-bars text-gray-500"></i>
+                        </button>
+                        <h1 class="text-lg font-medium">{% block page_title %}Dashboard{% endblock %}</h1>
+                    </div>
+                    <div>
+                        {% block header_actions %}{% endblock %}
+                    </div>
+                </header>
+                
+                <!-- Content Area -->
+                <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                    {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                                <div class="p-4 rounded-md 
+                                    {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% endif %}
+                                    {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% endif %}
+                                    {% if message.tags == 'warning' %}bg-yellow-50 text-yellow-800 border border-yellow-200{% endif %}
+                                    {% if message.tags == 'info' %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}"
+                                >
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    {% block content %}{% endblock %}
+                </main>
+            </div>
+        </div>
+    {% else %}
+        <!-- Unauthenticated Layout -->
+        {% block unauthenticated_content %}{% endblock %}
+    {% endif %}
+    
+    <!-- JavaScript -->
+    <script>
+        // Toggle sidebar on mobile
+        document.getElementById('toggle-sidebar')?.addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        });
+        
+        // On mobile, hide sidebar by default
+        if (window.innerWidth < 768) {
+            document.getElementById('sidebar')?.classList.add('hidden');
+        }
+    </script>
+    
+    <!-- Include Markdown parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Include Prism for code highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    
+    <!-- Markdown parser configuration -->
+    <script>
+        // Configure marked for safe rendering
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            sanitize: true
+        });
+        
+        // Function to render markdown content
+        function renderMarkdown() {
+            document.querySelectorAll('.render-markdown').forEach(element => {
+                const markdown = element.textContent || element.innerText;
+                element.innerHTML = marked.parse(markdown);
+                element.classList.add('markdown-content');
+                element.classList.remove('render-markdown');
+                
+                // Apply Prism syntax highlighting to code blocks
+                Prism.highlightAllUnder(element);
+            });
+        }
+        
+        // Render markdown when the page loads
+        document.addEventListener('DOMContentLoaded', renderMarkdown);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
