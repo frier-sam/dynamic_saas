@@ -1,10 +1,10 @@
-# Dynamic SaaS Generator
+# Dynamic SaaS 
 
 A platform that enables users to create custom SaaS applications through natural language conversations with an AI assistant.
 
 ## Overview
 
-The Dynamic SaaS Generator allows users to describe the application they need in natural language. The AI then:
+The Dynamic SaaS  allows users to describe the application they need in natural language. The AI then:
 
 1. Creates appropriate database structures
 2. Generates user interfaces
